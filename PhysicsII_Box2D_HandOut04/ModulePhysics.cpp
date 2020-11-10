@@ -36,22 +36,54 @@ bool ModulePhysics::Start()
 	ground = world->CreateBody(&bd);
 
 	// big static circle as "ground" in the middle of the screen
-	int x = SCREEN_WIDTH / 2;
-	int y = SCREEN_HEIGHT / 1.5f;
-	int diameter = SCREEN_WIDTH / 2;
+	int x = 0;
+	int y = 0;
+	int size = 42;
+	int pinballWall[42] = {
+		203, 883,
+		57, 772,
+		57, 175,
+		135, 32,
+		673, 32,
+		753, 177,
+		753, 756,
+		681, 756,
+		681, 193,
+		647, 193,
+		647, 770,
+		502, 882,
+		520, 908,
+		676, 789,
+		786, 789,
+		786, 176,
+		692, 2,
+		117, 1,
+		24, 165,
+		24, 788,
+		181, 905
+	};
 
 	b2BodyDef body;
 	body.type = b2_staticBody;
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
 
-	b2Body* big_ball = world->CreateBody(&body);
+	b2Body* walls = world->CreateBody(&body);
 
-	b2CircleShape shape;
-	shape.m_radius = PIXEL_TO_METERS(diameter) * 0.5f;
+	b2ChainShape shape;
+	b2Vec2* p = new b2Vec2[size];
+
+	for (uint i = 0; i < size / 2; i++)
+	{
+		p[i].x = PIXEL_TO_METERS(pinballWall[i * 2 + 0]);
+		p[i].y = PIXEL_TO_METERS(pinballWall[i * 2 + 1]);
+	}
+
+	shape.CreateLoop(p, size / 2);
 
 	b2FixtureDef fixture;
 	fixture.shape = &shape;
-	big_ball->CreateFixture(&fixture);
+
+	walls->CreateFixture(&fixture);
 
 	return true;
 }
