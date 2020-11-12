@@ -248,6 +248,8 @@ PhysBody* ModulePhysics::CreateFlipper(int x1, int y1, int width, int height, in
 	b2Body* anchor = world->CreateBody(&anchorDef);
 	b2PolygonShape box2;
 	box2.SetAsBox(PIXEL_TO_METERS(1), PIXEL_TO_METERS(1));
+
+	
 	
 	b2FixtureDef fixture2;
 	fixture2.shape = &box2;
@@ -259,8 +261,11 @@ PhysBody* ModulePhysics::CreateFlipper(int x1, int y1, int width, int height, in
 	jointDef.Initialize(anchor, flipper,(anchor->GetWorldCenter()));
 	jointDef.bodyA = flipper;
 	jointDef.bodyB = anchor;
-	jointDef.localAnchorA.Set(0, 0);
+	jointDef.localAnchorA.Set(PIXEL_TO_METERS(30), 0);
 	jointDef.localAnchorB.Set(0, 0);
+	jointDef.enableLimit = true;
+	jointDef.lowerAngle = -45 * DEGTORAD;
+	jointDef.upperAngle = -45 * DEGTORAD;
 	world->CreateJoint(&jointDef);
 
 	return pbody1;

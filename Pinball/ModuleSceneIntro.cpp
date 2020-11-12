@@ -36,7 +36,7 @@ bool ModuleSceneIntro::Start()
 	circles.add(App->physics->CreateCircle(750, 600, 25));
 	circles.getLast()->data->listener = this;
 	//flipper
-	flippers.add(App->physics->CreateFlipper(200, 1050 ,100,25, 300, 950));
+	flippers.add(App->physics->CreateFlipper(200, 1050 ,100,25, 350, 900));//250
 	flippers.getLast()->data->listener = this;
 	return ret;
 }
