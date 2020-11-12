@@ -32,6 +32,12 @@ bool ModuleSceneIntro::Start()
 
 	sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 50);
 
+	//ball
+	circles.add(App->physics->CreateCircle(750, 600, 25));
+	circles.getLast()->data->listener = this;
+	//flipper
+	flippers.add(App->physics->CreateFlipper(200, 1050 ,100,25, 300, 950));
+	flippers.getLast()->data->listener = this;
 	return ret;
 }
 
