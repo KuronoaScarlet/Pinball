@@ -25,9 +25,7 @@ bool ModuleSceneIntro::Start()
 
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
-	circle = App->textures->Load("pinball/wheel.png"); 
-	box = App->textures->Load("pinball/crate.png");
-	rick = App->textures->Load("pinball/rick_head.png");
+	circle = App->textures->Load("pinball/ball.png"); 
 	bonus_fx = App->audio->LoadFx("pinball/bonus.wav");
 
 	sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 50);
@@ -38,6 +36,7 @@ bool ModuleSceneIntro::Start()
 	//flipper
 	flippers.add(App->physics->CreateFlipper(200, 1050 ,100,25, 350, 900));//250
 	flippers.getLast()->data->listener = this;
+
 	return ret;
 }
 
@@ -127,8 +126,8 @@ update_status ModuleSceneIntro::Update()
 	{
 		int x, y;
 		c->data->GetPosition(x, y);
-		if(c->data->Contains(App->input->GetMouseX(), App->input->GetMouseY()))
-			App->renderer->Blit(circle, x, y, NULL, 1.0f, c->data->GetRotation());
+		App->renderer->Blit(circle, x, y, NULL, 1.0f, c->data->GetRotation());
+			
 		c = c->next;
 	}
 
