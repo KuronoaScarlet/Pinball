@@ -16,7 +16,7 @@ ModulePhysics::ModulePhysics(Application* app, bool start_enabled) : Module(app,
 {
 	world = NULL;
 	mouse_joint = NULL;
-	debug = true;
+	debug = false;
 }
 
 // Destructor
@@ -69,9 +69,9 @@ PhysBody* ModulePhysics::CreateWalls()
 		753, 179,
 		753, 756,
 		681, 756,
-		681, 213,
-		664, 191,
-		648, 212,
+		680, 161,
+		665, 132,
+		647, 162,
 		649, 770,
 		507, 877,
 		529, 880,
@@ -371,70 +371,6 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size)
 	return pbody;
 }
 
-PhysBody* ModulePhysics::CreateLeftFlipper(int x1, int y1, int width, int height, int x2, int y2)
-{
-	// Filpper 
-	b2BodyDef flipperDef;
-	flipperDef.type = b2_dynamicBody;
-	flipperDef.position.Set(PIXEL_TO_METERS(x1), PIXEL_TO_METERS(y1));
-
-	b2Body* flipper = world->CreateBody(&flipperDef);
-	b2PolygonShape box1;
-	box1.SetAsBox(PIXEL_TO_METERS(width) * 0.5f, PIXEL_TO_METERS(height) * 0.5f);
-
-
-	b2FixtureDef fixture1;
-	fixture1.shape = &box1;
-	fixture1.density = 1.0f;
-
-	flipper->CreateFixture(&fixture1);
-
-	PhysBody* pbody1 = new PhysBody();
-	pbody1->body = flipper;
-	flipper->SetUserData(pbody1);
-	pbody1->width = width * 0.5f;
-	pbody1->height = height * 0.5f;
-	
-	// Anchor
-	b2BodyDef anchorDef;
-	anchorDef.type = b2_staticBody;
-	anchorDef.position.Set(PIXEL_TO_METERS(x2), PIXEL_TO_METERS(y2));
-
-	b2Body* anchor = world->CreateBody(&anchorDef);
-	b2PolygonShape box2;
-	box2.SetAsBox(PIXEL_TO_METERS(1), PIXEL_TO_METERS(1));
-
-	
-	
-	b2FixtureDef fixture2;
-	fixture2.shape = &box2;
-
-	anchor->CreateFixture(&fixture2);
-
-	b2RevoluteJointDef jointDef;
-	jointDef.Initialize(anchor, flipper,(anchor->GetWorldCenter()));
-	jointDef.bodyA = flipper;
-	jointDef.bodyB = anchor;
-	jointDef.referenceAngle = 0*DEGTORAD;
-	jointDef.upperAngle = 220 * DEGTORAD;//0.25f * b2_pi
-	jointDef.lowerAngle = 160* DEGTORAD;
-	jointDef.enableLimit = true;
-
-	jointDef.enableMotor = true;
-	jointDef.maxMotorTorque = 10.0f;
-	jointDef.motorSpeed = 3.0f;
-		
-
-	jointDef.localAnchorA.Set(PIXEL_TO_METERS(30), 0);
-	jointDef.localAnchorB.Set(0, 0);
-
-	
-
-	world->CreateJoint(&jointDef);
-
-	return pbody1;
-}
-
 PhysBody* ModulePhysics::CreateRightFlipper(int x1, int y1, int width, int height, int x2, int y2)
 {
 	// Filpper 
@@ -458,6 +394,66 @@ PhysBody* ModulePhysics::CreateRightFlipper(int x1, int y1, int width, int heigh
 	flipper->SetUserData(pbody1);
 	pbody1->width = width * 0.5f;
 	pbody1->height = height * 0.5f;
+	
+	// Anchor
+	b2BodyDef anchorDef;
+	anchorDef.type = b2_staticBody;
+	anchorDef.position.Set(PIXEL_TO_METERS(x2), PIXEL_TO_METERS(y2));
+
+	b2Body* anchor = world->CreateBody(&anchorDef);
+	b2PolygonShape box2;
+	box2.SetAsBox(PIXEL_TO_METERS(1), PIXEL_TO_METERS(1));
+	
+	b2FixtureDef fixture2;
+	fixture2.shape = &box2;
+
+	anchor->CreateFixture(&fixture2);
+
+
+	b2RevoluteJointDef jointDef;
+	jointDef.Initialize(anchor, flipper,(anchor->GetWorldCenter()));
+	jointDef.bodyA = flipper;
+	jointDef.bodyB = anchor;
+	jointDef.referenceAngle = -35*DEGTORAD;
+	jointDef.upperAngle = 50 * DEGTORAD;//0.25f * b2_pi
+	//jointDef.lowerAngle = 160* DEGTORAD;
+	jointDef.enableLimit = true;
+
+	jointDef.enableMotor = true;
+	jointDef.maxMotorTorque = 10.0f;
+	jointDef.motorSpeed = 2.0f;
+		
+	jointDef.localAnchorA.Set(PIXEL_TO_METERS(45), 0);
+	jointDef.localAnchorB.Set(0, 0);
+
+	world->CreateJoint(&jointDef);
+
+	return pbody1;
+}
+
+PhysBody* ModulePhysics::CreateLeftFlipper(int x1, int y1, int width, int height, int x2, int y2)
+{
+	// Filpper 
+	b2BodyDef flipperDef;
+	flipperDef.type = b2_dynamicBody;
+	flipperDef.position.Set(PIXEL_TO_METERS(x1), PIXEL_TO_METERS(y1));
+
+	b2Body* flipper = world->CreateBody(&flipperDef);
+	b2PolygonShape box1;
+	box1.SetAsBox(PIXEL_TO_METERS(width) * 0.5f, PIXEL_TO_METERS(height) * 0.5f);
+
+
+	b2FixtureDef fixture1;
+	fixture1.shape = &box1;
+	fixture1.density = 1.0f;
+
+	flipper->CreateFixture(&fixture1);
+
+	PhysBody* pbody1 = new PhysBody();
+	pbody1->body = flipper;
+	flipper->SetUserData(pbody1);
+	pbody1->width = width * 0.5f;
+	pbody1->height = height * 0.5f;
 
 	// Anchor
 	b2BodyDef anchorDef;
@@ -468,18 +464,27 @@ PhysBody* ModulePhysics::CreateRightFlipper(int x1, int y1, int width, int heigh
 	b2PolygonShape box2;
 	box2.SetAsBox(PIXEL_TO_METERS(1), PIXEL_TO_METERS(1));
 
-
-
 	b2FixtureDef fixture2;
 	fixture2.shape = &box2;
 
 	anchor->CreateFixture(&fixture2);
 
+
 	b2RevoluteJointDef jointDef;
 	jointDef.Initialize(anchor, flipper, (anchor->GetWorldCenter()));
 	jointDef.bodyA = flipper;
 	jointDef.bodyB = anchor;
-	jointDef.localAnchorA.Set(PIXEL_TO_METERS(-30), 0);
+
+	jointDef.referenceAngle = 165* DEGTORAD;
+	jointDef.upperAngle = 50 * DEGTORAD;//0.25f * b2_pi
+	//jointDef.lowerAngle = 160* DEGTORAD;
+	jointDef.enableLimit = true;
+
+	jointDef.enableMotor = true;
+	jointDef.maxMotorTorque = 10.0f;
+	jointDef.motorSpeed = -2.0f;
+
+	jointDef.localAnchorA.Set(PIXEL_TO_METERS(45), 0);
 	jointDef.localAnchorB.Set(0, 0);
 
 	world->CreateJoint(&jointDef);

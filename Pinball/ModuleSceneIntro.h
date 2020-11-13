@@ -21,7 +21,8 @@ public:
 	p2List<PhysBody*> circles;
 	p2List<PhysBody*> boxes;
 	p2List<PhysBody*> ricks;
-	p2List<PhysBody*> flippers;
+	p2List<PhysBody*> LeftFlipper;
+	p2List<PhysBody*> RightFlipper;
 	p2List<PhysBody*> walls;
 	p2List<PhysBody*> Slingshot;
 	p2List<PhysBody*> Bumpers;
@@ -29,11 +30,12 @@ public:
 	PhysBody* circleSensor;
 	bool sensed;
 
-	
 	SDL_Texture* circle;
 	SDL_Texture* box;
 	SDL_Texture* rick;
 	SDL_Texture* pinballMap;
+	SDL_Texture* leftFlipper;
+	SDL_Texture* rightFlipper;
 
 	uint bonus_fx;
 	p2Point<int> ray;

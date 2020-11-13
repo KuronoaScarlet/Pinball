@@ -27,6 +27,8 @@ bool ModuleSceneIntro::Start()
 
 	pinballMap = App->textures->Load("pinball/pinball.png");
 	circle = App->textures->Load("pinball/ball.png"); 
+	leftFlipper = App->textures->Load("pinball/leftFlipper.png");
+	rightFlipper = App->textures->Load("pinball/rightFlipper.png");
 	bonus_fx = App->audio->LoadFx("pinball/bonus.wav");
 
 	//walls
@@ -50,20 +52,20 @@ bool ModuleSceneIntro::Start()
 	Bumpers.getLast()->data->listener = this;
 	
 	//Ball
-	/*circles.add(App->physics->CreateCircle(720, 600, 20));
-	circles.getLast()->data->listener = this;*/
+	circles.add(App->physics->CreateCircle(720, 600, 20));
+	circles.getLast()->data->listener = this;
 
 	//Left Flipper
-	flippers.add(App->physics->CreateLeftFlipper(100, 1050 ,105, 26, 300, 910));//203
-	flippers.getLast()->data->listener = this;
+	LeftFlipper.add(App->physics->CreateLeftFlipper(203, 905 ,120, 26, 201, 904));
+	LeftFlipper.getLast()->data->listener = this;
 
 	//Right Flipper
-	flippers.add(App->physics->CreateRightFlipper(100, 1050, 105, 26, 503, 910));
-	flippers.getLast()->data->listener = this;
+	RightFlipper.add(App->physics->CreateRightFlipper(499, 905, 120, 26, 501, 904));
+	RightFlipper.getLast()->data->listener = this;
 
 	//Sensors
 	rectangleSensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 50);
-	circleSensor = App->physics->CreateCircleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT/2 +50,50);//720, 740, 30
+	circleSensor = App->physics->CreateCircleSensor(720, 740, 30);
 
 	return ret;
 }
@@ -94,6 +96,15 @@ update_status ModuleSceneIntro::Update()
 		circles.getLast()->data->listener = this;
 	}
 
+	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN)
+	{
+		RightFlipper.getFirst()->data->body->ApplyTorque(2500.0f, true);
+	}
+	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_DOWN)
+	{
+		LeftFlipper.getFirst()->data->body->ApplyTorque(-2500.0f, true);
+	}
+
 
 	// Prepare for raycast ------------------------------------------------------
 	
@@ -110,7 +121,7 @@ update_status ModuleSceneIntro::Update()
 	while(c != NULL)
 	{
 		int x, y;
-		c->data->GetPosition(x, y);
+		c->data->GetPosition(x, y); //720, 600
 		App->renderer->Blit(circle, x, y, NULL, 1.0f, c->data->GetRotation());
 			
 		c = c->next;
@@ -139,6 +150,26 @@ update_status ModuleSceneIntro::Update()
 		int x, y;
 		c->data->GetPosition(x, y);
 		App->renderer->Blit(rick, x, y, NULL, 1.0f, c->data->GetRotation());
+		c = c->next;
+	}
+
+	c = LeftFlipper.getFirst();
+
+	while (c != NULL)
+	{
+		int x, y;
+		c->data->GetPosition(x, y);
+		App->renderer->Blit(leftFlipper, x, y, NULL, 1.0f, c->data->GetRotation());
+		c = c->next;
+	}
+
+	c = RightFlipper.getFirst();
+
+	while (c != NULL)
+	{
+		int x, y;
+		c->data->GetPosition(x, y);
+		App->renderer->Blit(rightFlipper, x, y, NULL, 1.0f, c->data->GetRotation());
 		c = c->next;
 	}
 
