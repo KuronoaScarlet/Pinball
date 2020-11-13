@@ -38,29 +38,31 @@ bool ModulePhysics::Start()
 	// big static circle as "ground" in the middle of the screen
 	int x = 0;
 	int y = 0;
-	int size = 42;
-	int pinballWall[42] = {
-		203, 883,
-		57, 772,
-		57, 175,
-		135, 32,
-		673, 32,
-		753, 177,
+	int size = 46;
+	int pinballWall[46] = {
+		57, 771,
+		57, 176,
+		136, 32,
+		672, 32,
+		753, 179,
 		753, 756,
 		681, 756,
-		681, 193,
-		647, 193,
-		647, 770,
-		502, 882,
-		520, 908,
-		676, 789,
-		786, 789,
-		786, 176,
-		692, 2,
-		117, 1,
+		680, 190,
+		649, 190,
+		649, 772,
+		509, 876,
+		530, 880,
+		527, 901,
+		677, 787,
+		785, 787,
+		786, 169,
+		691, 1,
+		116, 0,
 		24, 165,
 		24, 788,
-		181, 905
+		180, 905,
+		178, 884,
+		199, 880
 	};
 
 	b2BodyDef body;
@@ -216,7 +218,7 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size)
 
 	return pbody;
 }
-PhysBody* ModulePhysics::CreateFlipper(int x1, int y1, int width, int height, int x2, int y2)
+PhysBody* ModulePhysics::CreateRightFlipper(int x1, int y1, int width, int height, int x2, int y2)
 {
 	// Filpper 
 	b2BodyDef flipperDef;
@@ -263,9 +265,7 @@ PhysBody* ModulePhysics::CreateFlipper(int x1, int y1, int width, int height, in
 	jointDef.bodyB = anchor;
 	jointDef.localAnchorA.Set(PIXEL_TO_METERS(30), 0);
 	jointDef.localAnchorB.Set(0, 0);
-	jointDef.enableLimit = true;
-	jointDef.lowerAngle = -45 * DEGTORAD;
-	jointDef.upperAngle = -45 * DEGTORAD;
+
 	world->CreateJoint(&jointDef);
 
 	return pbody1;

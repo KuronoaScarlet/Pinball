@@ -25,6 +25,7 @@ bool ModuleSceneIntro::Start()
 
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
+	pinballMap = App->textures->Load("pinball/pinball.png");
 	circle = App->textures->Load("pinball/ball.png"); 
 	bonus_fx = App->audio->LoadFx("pinball/bonus.wav");
 
@@ -34,7 +35,7 @@ bool ModuleSceneIntro::Start()
 	circles.add(App->physics->CreateCircle(750, 600, 25));
 	circles.getLast()->data->listener = this;
 	//flipper
-	flippers.add(App->physics->CreateFlipper(200, 1050 ,100,25, 350, 900));//250
+	flippers.add(App->physics->CreateRightFlipper(100, 1050 ,105, 26, 203, 910));//250
 	flippers.getLast()->data->listener = this;
 
 	return ret;
@@ -51,6 +52,8 @@ bool ModuleSceneIntro::CleanUp()
 // Update: draw background
 update_status ModuleSceneIntro::Update()
 {
+	App->renderer->Blit(pinballMap, 0, 0, NULL);
+
 	if(App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
 		ray_on = !ray_on;
@@ -178,17 +181,4 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	int x, y;
 
 	App->audio->PlayFx(bonus_fx);
-
-	/*
-	if(bodyA)
-	{
-		bodyA->GetPosition(x, y);
-		App->renderer->DrawCircle(x, y, 50, 100, 100, 100);
-	}
-
-	if(bodyB)
-	{
-		bodyB->GetPosition(x, y);
-		App->renderer->DrawCircle(x, y, 50, 100, 100, 100);
-	}*/
 }
