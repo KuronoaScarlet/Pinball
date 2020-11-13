@@ -35,11 +35,33 @@ bool ModulePhysics::Start()
 	b2BodyDef bd;
 	ground = world->CreateBody(&bd);
 
-	// big static circle as "ground" in the middle of the screen
+	return true;
+}
+
+update_status ModulePhysics::PreUpdate()
+{
+	world->Step(1.0f / 60.0f, 6, 2);
+
+	for(b2Contact* c = world->GetContactList(); c; c = c->GetNext())
+	{
+		if(c->GetFixtureA()->IsSensor() && c->IsTouching())
+		{
+			PhysBody* pb1 = (PhysBody*)c->GetFixtureA()->GetBody()->GetUserData();
+			PhysBody* pb2 = (PhysBody*)c->GetFixtureA()->GetBody()->GetUserData();
+			if(pb1 && pb2 && pb1->listener)
+				pb1->listener->OnCollision(pb1, pb2);
+		}
+	}
+
+	return UPDATE_CONTINUE;
+}
+
+void ModulePhysics::CreateWalls()
+{
 	int x = 0;
 	int y = 0;
-	int size = 46;
-	int pinballWall[46] = {
+	int size = 48;
+	int pinballWall[48] = {
 		57, 771,
 		57, 176,
 		136, 32,
@@ -47,22 +69,23 @@ bool ModulePhysics::Start()
 		753, 179,
 		753, 756,
 		681, 756,
-		680, 190,
-		649, 190,
-		649, 772,
-		509, 876,
-		530, 880,
-		527, 901,
-		677, 787,
-		785, 787,
-		786, 169,
-		691, 1,
-		116, 0,
-		24, 165,
-		24, 788,
-		180, 905,
-		178, 884,
-		199, 880
+		681, 213,
+		664, 191,
+		648, 212,
+		649, 770,
+		507, 877,
+		529, 880,
+		526, 903,
+		677, 788,
+		785, 788,
+		784, 166,
+		692, 1,
+		117, 0,
+		25, 165,
+		25, 787,
+		180, 906,
+		177, 884,
+		199, 878
 	};
 
 	b2BodyDef body;
@@ -86,27 +109,101 @@ bool ModulePhysics::Start()
 	fixture.shape = &shape;
 
 	walls->CreateFixture(&fixture);
-
-	return true;
 }
 
-// 
-update_status ModulePhysics::PreUpdate()
+void ModulePhysics::CreateLeftSlingshot()
 {
-	world->Step(1.0f / 60.0f, 6, 2);
+	int x = 0;
+	int y = 0;
+	int size = 16;
+	int pinballSlingshot[16] = {
+	142, 548,
+	126, 554,
+	104, 670,
+	109, 686,
+	123, 697,
+	198, 738,
+	208, 736,
+	209, 726
+	};
 
-	for(b2Contact* c = world->GetContactList(); c; c = c->GetNext())
+	b2BodyDef body;
+	body.type = b2_staticBody;
+	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+
+	b2Body* leftSlingshot = world->CreateBody(&body);
+
+	b2ChainShape shape;
+	b2Vec2* p = new b2Vec2[size];
+
+	for (uint i = 0; i < size / 2; i++)
 	{
-		if(c->GetFixtureA()->IsSensor() && c->IsTouching())
-		{
-			PhysBody* pb1 = (PhysBody*)c->GetFixtureA()->GetBody()->GetUserData();
-			PhysBody* pb2 = (PhysBody*)c->GetFixtureA()->GetBody()->GetUserData();
-			if(pb1 && pb2 && pb1->listener)
-				pb1->listener->OnCollision(pb1, pb2);
-		}
+		p[i].x = PIXEL_TO_METERS(pinballSlingshot[i * 2 + 0]);
+		p[i].y = PIXEL_TO_METERS(pinballSlingshot[i * 2 + 1]);
 	}
 
-	return UPDATE_CONTINUE;
+	shape.CreateLoop(p, size / 2);
+
+	b2FixtureDef fixture;
+	fixture.shape = &shape;
+
+	leftSlingshot->CreateFixture(&fixture);
+}
+
+void ModulePhysics::CreateRightSlingshot()
+{
+	int x = 0;
+	int y = 0;
+	int size = 16;
+	int pinballSlingshot[16] = {
+		560, 546,
+		577, 556,
+		598, 669,
+		592, 686,
+		576, 697,
+		505, 736,
+		496, 735,
+		492, 726
+	};
+
+	b2BodyDef body;
+	body.type = b2_staticBody;
+	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+
+	b2Body* leftSlingshot = world->CreateBody(&body);
+
+	b2ChainShape shape;
+	b2Vec2* p = new b2Vec2[size];
+
+	for (uint i = 0; i < size / 2; i++)
+	{
+		p[i].x = PIXEL_TO_METERS(pinballSlingshot[i * 2 + 0]);
+		p[i].y = PIXEL_TO_METERS(pinballSlingshot[i * 2 + 1]);
+	}
+
+	shape.CreateLoop(p, size / 2);
+
+	b2FixtureDef fixture;
+	fixture.shape = &shape;
+
+	leftSlingshot->CreateFixture(&fixture);
+}
+
+void ModulePhysics::CreateBumper(int x, int y, int radius)
+{
+	b2BodyDef body;
+	body.type = b2_staticBody;
+	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+
+	b2Body* b = world->CreateBody(&body);
+
+	b2CircleShape shape;
+	shape.m_radius = PIXEL_TO_METERS(radius);
+	b2FixtureDef fixture;
+	fixture.shape = &shape;
+	fixture.density = 1.0f;
+
+	b->CreateFixture(&fixture);
 }
 
 PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius)
@@ -218,7 +315,8 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size)
 
 	return pbody;
 }
-PhysBody* ModulePhysics::CreateRightFlipper(int x1, int y1, int width, int height, int x2, int y2)
+
+PhysBody* ModulePhysics::CreateLeftFlipper(int x1, int y1, int width, int height, int x2, int y2)
 {
 	// Filpper 
 	b2BodyDef flipperDef;
@@ -258,7 +356,6 @@ PhysBody* ModulePhysics::CreateRightFlipper(int x1, int y1, int width, int heigh
 
 	anchor->CreateFixture(&fixture2);
 
-
 	b2RevoluteJointDef jointDef;
 	jointDef.Initialize(anchor, flipper,(anchor->GetWorldCenter()));
 	jointDef.bodyA = flipper;
@@ -271,7 +368,58 @@ PhysBody* ModulePhysics::CreateRightFlipper(int x1, int y1, int width, int heigh
 	return pbody1;
 }
 
-// 
+PhysBody* ModulePhysics::CreateRightFlipper(int x1, int y1, int width, int height, int x2, int y2)
+{
+	// Filpper 
+	b2BodyDef flipperDef;
+	flipperDef.type = b2_dynamicBody;
+	flipperDef.position.Set(PIXEL_TO_METERS(x1), PIXEL_TO_METERS(y1));
+
+	b2Body* flipper = world->CreateBody(&flipperDef);
+	b2PolygonShape box1;
+	box1.SetAsBox(PIXEL_TO_METERS(width) * 0.5f, PIXEL_TO_METERS(height) * 0.5f);
+
+
+	b2FixtureDef fixture1;
+	fixture1.shape = &box1;
+	fixture1.density = 1.0f;
+
+	flipper->CreateFixture(&fixture1);
+
+	PhysBody* pbody1 = new PhysBody();
+	pbody1->body = flipper;
+	flipper->SetUserData(pbody1);
+	pbody1->width = width * 0.5f;
+	pbody1->height = height * 0.5f;
+
+	// Anchor
+	b2BodyDef anchorDef;
+	anchorDef.type = b2_staticBody;
+	anchorDef.position.Set(PIXEL_TO_METERS(x2), PIXEL_TO_METERS(y2));
+
+	b2Body* anchor = world->CreateBody(&anchorDef);
+	b2PolygonShape box2;
+	box2.SetAsBox(PIXEL_TO_METERS(1), PIXEL_TO_METERS(1));
+
+
+
+	b2FixtureDef fixture2;
+	fixture2.shape = &box2;
+
+	anchor->CreateFixture(&fixture2);
+
+	b2RevoluteJointDef jointDef;
+	jointDef.Initialize(anchor, flipper, (anchor->GetWorldCenter()));
+	jointDef.bodyA = flipper;
+	jointDef.bodyB = anchor;
+	jointDef.localAnchorA.Set(PIXEL_TO_METERS(-30), 0);
+	jointDef.localAnchorB.Set(0, 0);
+
+	world->CreateJoint(&jointDef);
+
+	return pbody1;
+}
+
 update_status ModulePhysics::PostUpdate()
 {
 	if(App->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
@@ -370,8 +518,6 @@ update_status ModulePhysics::PostUpdate()
 	return UPDATE_CONTINUE;
 }
 
-
-// Called before quitting
 bool ModulePhysics::CleanUp()
 {
 	LOG("Destroying physics world");

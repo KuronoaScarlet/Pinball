@@ -29,14 +29,31 @@ bool ModuleSceneIntro::Start()
 	circle = App->textures->Load("pinball/ball.png"); 
 	bonus_fx = App->audio->LoadFx("pinball/bonus.wav");
 
-	sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 50);
+	//walls
+	App->physics->CreateWalls();
 
-	//ball
-	circles.add(App->physics->CreateCircle(750, 600, 25));
+	//Slingshots
+	App->physics->CreateLeftSlingshot();
+	App->physics->CreateRightSlingshot();
+
+	//Bumpers
+	App->physics->CreateBumper(207, 256, 64);
+	App->physics->CreateBumper(354, 433, 64);
+	App->physics->CreateBumper(505, 256, 64);
+
+	//Ball
+	circles.add(App->physics->CreateCircle(720, 600, 20));
 	circles.getLast()->data->listener = this;
-	//flipper
-	flippers.add(App->physics->CreateRightFlipper(100, 1050 ,105, 26, 203, 910));//250
+	//Left Flipper
+	flippers.add(App->physics->CreateLeftFlipper(100, 1050 ,105, 26, 203, 910));
 	flippers.getLast()->data->listener = this;
+
+	//Right Flipper
+	flippers.add(App->physics->CreateRightFlipper(100, 1050, 105, 26, 503, 910));
+	flippers.getLast()->data->listener = this;
+
+	//Sensors
+	sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 50);
 
 	return ret;
 }
@@ -63,55 +80,10 @@ update_status ModuleSceneIntro::Update()
 
 	if(App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 	{
-		circles.add(App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 25));
+		circles.add(App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 20));
 		circles.getLast()->data->listener = this;
 	}
 
-	if(App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
-	{
-		boxes.add(App->physics->CreateRectangle(App->input->GetMouseX(), App->input->GetMouseY(), 100, 50));
-	}
-
-	if(App->input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
-	{
-		// Pivot 0, 0
-		int rick_head[64] = {
-			14, 36,
-			42, 40,
-			40, 0,
-			75, 30,
-			88, 4,
-			94, 39,
-			111, 36,
-			104, 58,
-			107, 62,
-			117, 67,
-			109, 73,
-			110, 85,
-			106, 91,
-			109, 99,
-			103, 104,
-			100, 115,
-			106, 121,
-			103, 125,
-			98, 126,
-			95, 137,
-			83, 147,
-			67, 147,
-			53, 140,
-			46, 132,
-			34, 136,
-			38, 126,
-			23, 123,
-			30, 114,
-			10, 102,
-			29, 90,
-			0, 75,
-			30, 62
-		};
-
-		ricks.add(App->physics->CreateChain(App->input->GetMouseX(), App->input->GetMouseY(), rick_head, 64));
-	}
 
 	// Prepare for raycast ------------------------------------------------------
 	

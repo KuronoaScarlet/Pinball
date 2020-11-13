@@ -42,10 +42,16 @@ public:
 	update_status PostUpdate();
 	bool CleanUp();
 
+	void CreateWalls();
+	void CreateLeftSlingshot();
+	void CreateRightSlingshot();
+	void CreateBumper(int x, int y, int radius);
+
 	PhysBody* CreateCircle(int x, int y, int radius);
 	PhysBody* CreateRectangle(int x, int y, int width, int height);
 	PhysBody* CreateRectangleSensor(int x, int y, int width, int height);
 	PhysBody* CreateChain(int x, int y, int* points, int size);
+	PhysBody* CreateLeftFlipper(int x1, int y1, int width, int height, int x2, int y2);
 	PhysBody* CreateRightFlipper(int x1, int y1, int width, int height, int x2, int y2);
 
 	// b2ContactListener ---
