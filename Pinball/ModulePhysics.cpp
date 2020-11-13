@@ -56,7 +56,7 @@ update_status ModulePhysics::PreUpdate()
 	return UPDATE_CONTINUE;
 }
 
-void ModulePhysics::CreateWalls()
+PhysBody* ModulePhysics::CreateWalls()
 {
 	int x = 0;
 	int y = 0;
@@ -109,9 +109,18 @@ void ModulePhysics::CreateWalls()
 	fixture.shape = &shape;
 
 	walls->CreateFixture(&fixture);
+
+	PhysBody* pbody = new PhysBody();
+	pbody->body = walls;
+	walls->SetUserData(pbody);
+	pbody->width = pbody->height = 0;
+
+
+
+	return pbody;
 }
 
-void ModulePhysics::CreateLeftSlingshot()
+PhysBody* ModulePhysics::CreateLeftSlingshot()
 {
 	int x = 0;
 	int y = 0;
@@ -148,9 +157,16 @@ void ModulePhysics::CreateLeftSlingshot()
 	fixture.shape = &shape;
 
 	leftSlingshot->CreateFixture(&fixture);
+
+	PhysBody* pbody = new PhysBody();
+	pbody->body = leftSlingshot;
+	leftSlingshot->SetUserData(pbody);
+	pbody->width = pbody->height = 0;
+
+	return pbody;
 }
 
-void ModulePhysics::CreateRightSlingshot()
+PhysBody* ModulePhysics::CreateRightSlingshot()
 {
 	int x = 0;
 	int y = 0;
@@ -170,7 +186,7 @@ void ModulePhysics::CreateRightSlingshot()
 	body.type = b2_staticBody;
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
 
-	b2Body* leftSlingshot = world->CreateBody(&body);
+	b2Body* rightSlingshot = world->CreateBody(&body);
 
 	b2ChainShape shape;
 	b2Vec2* p = new b2Vec2[size];
@@ -186,16 +202,23 @@ void ModulePhysics::CreateRightSlingshot()
 	b2FixtureDef fixture;
 	fixture.shape = &shape;
 
-	leftSlingshot->CreateFixture(&fixture);
+	rightSlingshot->CreateFixture(&fixture);
+
+	PhysBody* pbody = new PhysBody();
+	pbody->body = rightSlingshot;
+	rightSlingshot->SetUserData(pbody);
+	pbody->width = pbody->height = 0;
+
+	return pbody;
 }
 
-void ModulePhysics::CreateBumper(int x, int y, int radius)
+PhysBody* ModulePhysics::CreateBumper(int x, int y, int radius)
 {
 	b2BodyDef body;
 	body.type = b2_staticBody;
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
 
-	b2Body* b = world->CreateBody(&body);
+	b2Body* bumper = world->CreateBody(&body);
 
 	b2CircleShape shape;
 	shape.m_radius = PIXEL_TO_METERS(radius);
@@ -203,7 +226,14 @@ void ModulePhysics::CreateBumper(int x, int y, int radius)
 	fixture.shape = &shape;
 	fixture.density = 1.0f;
 
-	b->CreateFixture(&fixture);
+	bumper->CreateFixture(&fixture);
+
+	PhysBody* pbody = new PhysBody();
+	pbody->body = bumper;
+	bumper->SetUserData(pbody);
+	pbody->width = pbody->height = radius;
+	
+	return pbody;
 }
 
 PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius)
@@ -229,6 +259,31 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius)
 
 	return pbody;
 }
+PhysBody* ModulePhysics::CreateCircleSensor(int x, int y, int radius)
+{
+	b2BodyDef body;
+	body.type = b2_staticBody;
+	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+
+	b2Body* b = world->CreateBody(&body);
+
+	b2CircleShape shape;
+	shape.m_radius = PIXEL_TO_METERS(radius);
+	b2FixtureDef fixture;
+	fixture.shape = &shape;
+	fixture.density = 1.0f;
+	fixture.isSensor = true;
+
+	b->CreateFixture(&fixture);
+
+	PhysBody* pbody = new PhysBody();
+	pbody->body = b;
+	b->SetUserData(pbody);
+	pbody->width = pbody->height = radius;
+
+	return pbody;
+}
+
 
 PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height)
 {
@@ -360,8 +415,20 @@ PhysBody* ModulePhysics::CreateLeftFlipper(int x1, int y1, int width, int height
 	jointDef.Initialize(anchor, flipper,(anchor->GetWorldCenter()));
 	jointDef.bodyA = flipper;
 	jointDef.bodyB = anchor;
+	jointDef.referenceAngle = 0*DEGTORAD;
+	jointDef.upperAngle = 220 * DEGTORAD;//0.25f * b2_pi
+	jointDef.lowerAngle = 160* DEGTORAD;
+	jointDef.enableLimit = true;
+
+	jointDef.enableMotor = true;
+	jointDef.maxMotorTorque = 10.0f;
+	jointDef.motorSpeed = 3.0f;
+		
+
 	jointDef.localAnchorA.Set(PIXEL_TO_METERS(30), 0);
 	jointDef.localAnchorB.Set(0, 0);
+
+	
 
 	world->CreateJoint(&jointDef);
 

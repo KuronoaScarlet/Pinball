@@ -42,12 +42,13 @@ public:
 	update_status PostUpdate();
 	bool CleanUp();
 
-	void CreateWalls();
-	void CreateLeftSlingshot();
-	void CreateRightSlingshot();
-	void CreateBumper(int x, int y, int radius);
+	PhysBody* CreateWalls();
+	PhysBody* CreateLeftSlingshot();
+	PhysBody* CreateRightSlingshot();
+	PhysBody* CreateBumper(int x, int y, int radius);
 
 	PhysBody* CreateCircle(int x, int y, int radius);
+	PhysBody* CreateCircleSensor(int x, int y, int radius);
 	PhysBody* CreateRectangle(int x, int y, int width, int height);
 	PhysBody* CreateRectangleSensor(int x, int y, int width, int height);
 	PhysBody* CreateChain(int x, int y, int* points, int size);

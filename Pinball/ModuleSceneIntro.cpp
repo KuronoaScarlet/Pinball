@@ -30,22 +30,31 @@ bool ModuleSceneIntro::Start()
 	bonus_fx = App->audio->LoadFx("pinball/bonus.wav");
 
 	//walls
-	App->physics->CreateWalls();
+	walls.add(App->physics->CreateWalls());
+	walls.getLast()->data->listener = this;
 
 	//Slingshots
-	App->physics->CreateLeftSlingshot();
-	App->physics->CreateRightSlingshot();
+	Slingshot.add(App->physics->CreateLeftSlingshot());
+	Slingshot.getLast()->data->listener = this;
+	Slingshot.add(App->physics->CreateRightSlingshot());
+	Slingshot.getLast()->data->listener = this;
+	
 
 	//Bumpers
-	App->physics->CreateBumper(207, 256, 64);
-	App->physics->CreateBumper(354, 433, 64);
-	App->physics->CreateBumper(505, 256, 64);
-
+	
+	Bumpers.add(App->physics->CreateBumper(207, 256, 64));
+	Bumpers.getLast()->data->listener = this;
+	Bumpers.add(App->physics->CreateBumper(354, 433, 64));
+	Bumpers.getLast()->data->listener = this;
+	Bumpers.add(App->physics->CreateBumper(505, 256, 64));
+	Bumpers.getLast()->data->listener = this;
+	
 	//Ball
-	circles.add(App->physics->CreateCircle(720, 600, 20));
-	circles.getLast()->data->listener = this;
+	/*circles.add(App->physics->CreateCircle(720, 600, 20));
+	circles.getLast()->data->listener = this;*/
+
 	//Left Flipper
-	flippers.add(App->physics->CreateLeftFlipper(100, 1050 ,105, 26, 203, 910));
+	flippers.add(App->physics->CreateLeftFlipper(100, 1050 ,105, 26, 300, 910));//203
 	flippers.getLast()->data->listener = this;
 
 	//Right Flipper
@@ -53,7 +62,8 @@ bool ModuleSceneIntro::Start()
 	flippers.getLast()->data->listener = this;
 
 	//Sensors
-	sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 50);
+	rectangleSensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 50);
+	circleSensor = App->physics->CreateCircleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT/2 +50,50);//720, 740, 30
 
 	return ret;
 }
@@ -151,6 +161,7 @@ update_status ModuleSceneIntro::Update()
 void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
 	int x, y;
+
 
 	App->audio->PlayFx(bonus_fx);
 }
