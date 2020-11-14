@@ -64,7 +64,7 @@ bool ModuleSceneIntro::Start()
 	RightFlipper.getLast()->data->listener = this;
 
 	//Sensors
-	rectangleSensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 50);
+	
 	circleSensor = App->physics->CreateCircleSensor(720, 740, 30);
 
 	return ret;
@@ -82,6 +82,9 @@ bool ModuleSceneIntro::CleanUp()
 update_status ModuleSceneIntro::Update()
 {
 	App->renderer->Blit(pinballMap, 0, 0, NULL);
+
+	b2Vec2 force(0, -1000);
+	b2Vec2 speed(0, 0);
 
 	if(App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
@@ -104,7 +107,11 @@ update_status ModuleSceneIntro::Update()
 	{
 		LeftFlipper.getFirst()->data->body->ApplyTorque(-2500.0f, true);
 	}
-
+	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_DOWN && circles.getFirst()->data->body->GetLinearVelocity() == speed)
+	{
+		circles.getFirst()->data->body->ApplyForce(force, circles.getFirst()->data->body->GetPosition(), true);
+		rectangleSensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 10);
+	}
 
 	// Prepare for raycast ------------------------------------------------------
 	
@@ -191,8 +198,14 @@ update_status ModuleSceneIntro::Update()
 
 void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
-	int x, y;
+	if (bodyB == rectangleSensor)
+	{
+		// Clear the ball
+		App->audio->PlayFx(bonus_fx);
+		circles.clear();
 
-
-	App->audio->PlayFx(bonus_fx);
+		// Create another one
+		/*circles.add(App->physics->CreateCircle(720, 600, 20));
+		circles.getLast()->data->listener = this;*/
+	}
 }
