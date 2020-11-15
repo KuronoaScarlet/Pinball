@@ -6,6 +6,7 @@
 #include "ModuleTextures.h"
 #include "ModuleAudio.h"
 #include "ModulePhysics.h"
+#include "ModuleFonts.h"
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -68,9 +69,15 @@ bool ModuleSceneIntro::Start()
 
 	//Sensors
 	rectangleSensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 10);
-	circleSensor1 = App->physics->CreateCircleSensor(207, 256, 70);
-	circleSensor2 = App->physics->CreateCircleSensor(354, 433, 70);
-	circleSensor3 = App->physics->CreateCircleSensor(505, 256, 70);
+	circleSensor1 = App->physics->CreateCircleSensor(207, 256, 66);
+	circleSensor2 = App->physics->CreateCircleSensor(354, 433, 66);
+	circleSensor3 = App->physics->CreateCircleSensor(505, 256, 66);
+
+
+	//Fonts
+	char lookupTable[] = { "! @,_./0123456789$:< ?abcdefghijklmnopqrstuvwxyzA" };
+	scoreFont = App->fonts->Load("Pinball/Fonts/rtype_font3.png", lookupTable, 2);
+	App->activeFonts++; App->totalFonts++;
 
 	return ret;
 }
@@ -105,6 +112,14 @@ update_status ModuleSceneIntro::Update()
 		circles.clear();
 		circles.add(App->physics->CreateCircle(720, 650, 20));
 		circles.getLast()->data->listener = this;
+
+		//Highscore
+		if (prevScore < score)
+		{
+			highScore = score;
+		}
+		prevScore = score;
+		score = 000;
 	}
 
 	if(App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
@@ -228,6 +243,22 @@ update_status ModuleSceneIntro::Update()
 			App->renderer->DrawLine(ray.x + destination.x, ray.y + destination.y, ray.x + destination.x + normal.x * 25.0f, ray.y + destination.y + normal.y * 25.0f, 100, 255, 100);
 	}
 
+	//Score
+	App->fonts->BlitText(590, 870, scoreFont, "score:");
+	sprintf_s(scoreText, 10, "%4d", score);
+	App->fonts->BlitText(640, 870, scoreFont, scoreText);
+
+	//HighScore
+	App->fonts->BlitText(590, 890, scoreFont, "highscore:");
+	sprintf_s(scoreText, 10, "%4d", highScore);
+	App->fonts->BlitText(680, 890, scoreFont, scoreText);
+
+	//Previous Score
+	App->fonts->BlitText(590, 910, scoreFont, "previous score:");
+	sprintf_s(scoreText, 10, "%4d", prevScore);
+	App->fonts->BlitText(715, 910, scoreFont, scoreText);
+
+
 	return UPDATE_CONTINUE;
 }
 
@@ -241,10 +272,11 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	{
 		b2Vec2 lVel(circles.getFirst()->data->body->GetLinearVelocity());
 
-		lVel.x = lVel.x * 75.0f;
-		lVel.y = -lVel.y * 75.0f;
+		lVel.x = lVel.x * 40.0f;
+		lVel.y = -lVel.y * 40.0f;
 		circles.getFirst()->data->body->ApplyForce(lVel, circles.getFirst()->data->body->GetPosition(), true);
 
+		score += 100;
 	}
 	
 }

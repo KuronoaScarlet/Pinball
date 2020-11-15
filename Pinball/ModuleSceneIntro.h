@@ -45,6 +45,15 @@ public:
 	bool rayOn;
 	bool onScreen;
 
+	//Fonts
+	int scoreFont = -1;
+	char scoreText[10] = { "\0" };
+
+	//Score
+	uint score = 000;
+	uint highScore = 000;
+	uint prevScore = 000;
+
 	//EasterEgg
 	SDL_Texture* KNekro;
 	bool easterEgg1 = false;

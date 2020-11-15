@@ -12,6 +12,7 @@ class ModuleAudio;
 class ModulePlayer;
 class ModuleSceneIntro;
 class ModulePhysics;
+class ModuleFonts;
 
 class Application
 {
@@ -24,6 +25,7 @@ public:
 	ModulePlayer* player;
 	ModuleSceneIntro* scene_intro;
 	ModulePhysics* physics;
+	ModuleFonts* fonts;
 
 private:
 
@@ -41,4 +43,8 @@ public:
 private:
 
 	void AddModule(Module* mod);
+
+public:
+	uint activeFonts = 0;
+	uint totalFonts = 0;
 };
