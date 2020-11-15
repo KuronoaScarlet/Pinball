@@ -2,7 +2,7 @@
 
 ## Description
 
-A simple Pinball game created by Peko Group! 
+A simple and original Pinball game created by Peko Group! 
 This project is created according to the Physics II subject at CITM university. 
 We hope you like it!
 
