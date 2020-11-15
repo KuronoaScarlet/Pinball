@@ -31,3 +31,6 @@ We hope you like it!
 ## License
 
 This project is licensed under an unmodified MIT license, which is an OSI-certified license that allows static linking with closed source software. Check [LICENSE](LICENSE) for further details.
+
+# Latest version!
+[Download here!](https://github.com/KuronoaScarlet/Pinball/releases/tag/1.0)
