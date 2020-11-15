@@ -27,13 +27,16 @@ bool ModuleSceneIntro::Start()
 
 	pinballMap = App->textures->Load("pinball/pinball.png");
 	circle = App->textures->Load("pinball/ball.png"); 
+	KNekro = App->textures->Load("pinball/KNekrin.png");
 	leftFlipper = App->textures->Load("pinball/leftFlipper.png");
 	rightFlipper = App->textures->Load("pinball/rightFlipper.png");
 	bonus_fx = App->audio->LoadFx("pinball/bonus.wav");
 
 	//walls
-	walls.add(App->physics->CreateWalls());
-	walls.getLast()->data->listener = this;
+	
+	walls = App->physics->CreateWalls();
+	//walls.add(App->physics->CreateWalls());
+	
 
 	//Slingshots
 	Slingshot.add(App->physics->CreateLeftSlingshot());
@@ -65,7 +68,9 @@ bool ModuleSceneIntro::Start()
 
 	//Sensors
 	rectangleSensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 10);
-	circleSensor = App->physics->CreateCircleSensor(720, 740, 30);
+	circleSensor1 = App->physics->CreateCircleSensor(207, 256, 70);
+	circleSensor2 = App->physics->CreateCircleSensor(354, 433, 70);
+	circleSensor3 = App->physics->CreateCircleSensor(505, 256, 70);
 
 	return ret;
 }
@@ -126,8 +131,13 @@ update_status ModuleSceneIntro::Update()
 	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_DOWN && circles.getFirst()->data->body->GetLinearVelocity() == speed)
 	{
 		circles.getFirst()->data->body->ApplyForce(force, circles.getFirst()->data->body->GetPosition(), true);
-		
 	}
+	if (App->input->GetKey(SDL_SCANCODE_K) == KEY_DOWN)
+	{
+		easterEgg1 = !easterEgg1;
+	}
+	
+	
 
 	// Prepare for raycast ------------------------------------------------------
 	
@@ -140,15 +150,24 @@ update_status ModuleSceneIntro::Update()
 
 	// All draw functions ------------------------------------------------------
 	p2List_item<PhysBody*>* c = circles.getFirst();
-
+	//circle
 	while(c != NULL)
 	{
 		int x, y;
 		c->data->GetPosition(x, y); //720, 600
-		App->renderer->Blit(circle, x, y, NULL, 1.0f, c->data->GetRotation());
-			
+		if (easterEgg1 == true)
+		{
+			App->renderer->Blit(KNekro, x, y, NULL, 1.0f, c->data->GetRotation());
+		}
+
+		else
+		{
+			App->renderer->Blit(circle, x, y, NULL, 1.0f, c->data->GetRotation());
+		}
+						
 		c = c->next;
 	}
+	
 
 	c = boxes.getFirst();
 
@@ -214,9 +233,18 @@ update_status ModuleSceneIntro::Update()
 
 void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
-	if (bodyB == rectangleSensor)
+	if (bodyB != walls)
 	{
-		// Clear the ball
 		App->audio->PlayFx(bonus_fx);
 	}
+	if( bodyB == circleSensor1 || bodyB == circleSensor2 || bodyB == circleSensor3)
+	{
+		b2Vec2 lVel(circles.getFirst()->data->body->GetLinearVelocity());
+
+		lVel.x = lVel.x * 75.0f;
+		lVel.y = -lVel.y * 75.0f;
+		circles.getFirst()->data->body->ApplyForce(lVel, circles.getFirst()->data->body->GetPosition(), true);
+
+	}
+	
 }

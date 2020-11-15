@@ -23,11 +23,13 @@ public:
 	p2List<PhysBody*> ricks;
 	p2List<PhysBody*> LeftFlipper;
 	p2List<PhysBody*> RightFlipper;
-	p2List<PhysBody*> walls;
 	p2List<PhysBody*> Slingshot;
 	p2List<PhysBody*> Bumpers;
+	PhysBody* walls;
 	PhysBody* rectangleSensor;
-	PhysBody* circleSensor;
+	PhysBody* circleSensor1;
+	PhysBody* circleSensor2;
+	PhysBody* circleSensor3;
 	bool sensed;
 
 	SDL_Texture* circle;
@@ -36,9 +38,14 @@ public:
 	SDL_Texture* pinballMap;
 	SDL_Texture* leftFlipper;
 	SDL_Texture* rightFlipper;
+	
 
 	uint bonus_fx;
 	p2Point<int> ray;
 	bool rayOn;
 	bool onScreen;
+
+	//EasterEgg
+	SDL_Texture* KNekro;
+	bool easterEgg1 = false;
 };
