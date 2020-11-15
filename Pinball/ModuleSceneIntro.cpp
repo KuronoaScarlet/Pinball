@@ -99,6 +99,7 @@ update_status ModuleSceneIntro::Update()
 	{
 		circles.clear();
 		circles.add(App->physics->CreateCircle(720, 650, 20));
+		circles.getLast()->data->listener = this;
 	}
 
 	if(App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
