@@ -10,7 +10,7 @@
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 	circle = box = rick = NULL;
-	ray_on = false;
+	rayOn = false;
 	sensed = false;
 }
 
@@ -52,7 +52,7 @@ bool ModuleSceneIntro::Start()
 	Bumpers.getLast()->data->listener = this;
 	
 	//Ball
-	circles.add(App->physics->CreateCircle(720, 600, 20));
+	circles.add(App->physics->CreateCircle(720, 650, 20));
 	circles.getLast()->data->listener = this;
 
 	//Left Flipper
@@ -64,7 +64,7 @@ bool ModuleSceneIntro::Start()
 	RightFlipper.getLast()->data->listener = this;
 
 	//Sensors
-	
+	rectangleSensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 10);
 	circleSensor = App->physics->CreateCircleSensor(720, 740, 30);
 
 	return ret;
@@ -85,10 +85,25 @@ update_status ModuleSceneIntro::Update()
 
 	b2Vec2 force(0, -1000);
 	b2Vec2 speed(0, 0);
+	b2Vec2 position = circles.getFirst()->data->body->GetPosition();
+
+	if (position.y < PIXEL_TO_METERS(1380))
+	{
+		onScreen = true;
+	}
+	else
+	{
+		onScreen = false;
+	}
+	if (onScreen == false)
+	{
+		circles.clear();
+		circles.add(App->physics->CreateCircle(720, 650, 20));
+	}
 
 	if(App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
-		ray_on = !ray_on;
+		rayOn = !rayOn;
 		ray.x = App->input->GetMouseX();
 		ray.y = App->input->GetMouseY();
 	}
@@ -110,7 +125,7 @@ update_status ModuleSceneIntro::Update()
 	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_DOWN && circles.getFirst()->data->body->GetLinearVelocity() == speed)
 	{
 		circles.getFirst()->data->body->ApplyForce(force, circles.getFirst()->data->body->GetPosition(), true);
-		rectangleSensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 10);
+		
 	}
 
 	// Prepare for raycast ------------------------------------------------------
@@ -141,7 +156,7 @@ update_status ModuleSceneIntro::Update()
 		int x, y;
 		c->data->GetPosition(x, y);
 		App->renderer->Blit(box, x, y, NULL, 1.0f, c->data->GetRotation());
-		if(ray_on)
+		if(rayOn)
 		{
 			int hit = c->data->RayCast(ray.x, ray.y, mouse.x, mouse.y, normal.x, normal.y);
 			if(hit >= 0)
@@ -181,7 +196,7 @@ update_status ModuleSceneIntro::Update()
 	}
 
 	// ray -----------------
-	if(ray_on == true)
+	if(rayOn == true)
 	{
 		fVector destination(mouse.x-ray.x, mouse.y-ray.y);
 		destination.Normalize();
@@ -202,10 +217,5 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	{
 		// Clear the ball
 		App->audio->PlayFx(bonus_fx);
-		circles.clear();
-
-		// Create another one
-		/*circles.add(App->physics->CreateCircle(720, 600, 20));
-		circles.getLast()->data->listener = this;*/
 	}
 }
