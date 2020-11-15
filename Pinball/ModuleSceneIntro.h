@@ -41,6 +41,7 @@ public:
 	
 
 	uint bonus_fx;
+	uint easterEgg_fx;
 	p2Point<int> ray;
 	bool rayOn;
 	bool onScreen;

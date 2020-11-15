@@ -32,6 +32,7 @@ bool ModuleSceneIntro::Start()
 	leftFlipper = App->textures->Load("pinball/leftFlipper.png");
 	rightFlipper = App->textures->Load("pinball/rightFlipper.png");
 	bonus_fx = App->audio->LoadFx("pinball/bonus.wav");
+	easterEgg_fx = App->audio->LoadFx("pinball/KNEKRO_THEME_DE_LIMON.ogg");
 
 	//walls
 	
@@ -150,6 +151,16 @@ update_status ModuleSceneIntro::Update()
 	if (App->input->GetKey(SDL_SCANCODE_K) == KEY_DOWN)
 	{
 		easterEgg1 = !easterEgg1;
+		if (easterEgg1 == true) 
+		{
+			
+			App->audio->PlayFx(easterEgg_fx, 1);
+			
+		}
+		else
+		{
+		
+		}
 	}
 	
 	
