@@ -32,7 +32,7 @@ bool ModuleSceneIntro::Start()
 	leftFlipper = App->textures->Load("pinball/leftFlipper.png");
 	rightFlipper = App->textures->Load("pinball/rightFlipper.png");
 	bonus_fx = App->audio->LoadFx("pinball/bonus.wav");
-	easterEgg_fx = App->audio->LoadFx("pinball/KNEKRO_THEME_DE_LIMON.ogg");
+	ostFx = App->audio->LoadFx("pinball/ostFx.ogg");
 
 	//walls
 	
@@ -80,6 +80,9 @@ bool ModuleSceneIntro::Start()
 	scoreFont = App->fonts->Load("Pinball/Fonts/rtype_font3.png", lookupTable, 2);
 	App->activeFonts++; App->totalFonts++;
 
+	//Audio
+	App->audio->PlayFx(ostFx, 1);
+
 	return ret;
 }
 
@@ -115,7 +118,7 @@ update_status ModuleSceneIntro::Update()
 		circles.getLast()->data->listener = this;
 
 		//Highscore
-		if (prevScore < score)
+		if (highScore < score)
 		{
 			highScore = score;
 		}
@@ -148,22 +151,6 @@ update_status ModuleSceneIntro::Update()
 	{
 		circles.getFirst()->data->body->ApplyForce(force, circles.getFirst()->data->body->GetPosition(), true);
 	}
-	if (App->input->GetKey(SDL_SCANCODE_K) == KEY_DOWN)
-	{
-		easterEgg1 = !easterEgg1;
-		if (easterEgg1 == true) 
-		{
-			
-			App->audio->PlayFx(easterEgg_fx, 1);
-			
-		}
-		else
-		{
-		
-		}
-	}
-	
-	
 
 	// Prepare for raycast ------------------------------------------------------
 	
