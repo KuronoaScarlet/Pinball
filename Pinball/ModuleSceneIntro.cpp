@@ -69,7 +69,6 @@ bool ModuleSceneIntro::Start()
 	RightFlipper.getLast()->data->listener = this;
 
 	//Sensors
-	rectangleSensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 10);
 	circleSensor1 = App->physics->CreateCircleSensor(207, 256, 66);
 	circleSensor2 = App->physics->CreateCircleSensor(354, 433, 66);
 	circleSensor3 = App->physics->CreateCircleSensor(505, 256, 66);
