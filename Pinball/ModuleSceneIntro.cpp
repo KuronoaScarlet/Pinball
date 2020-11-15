@@ -150,6 +150,10 @@ update_status ModuleSceneIntro::Update()
 	{
 		circles.getFirst()->data->body->ApplyForce(force, circles.getFirst()->data->body->GetPosition(), true);
 	}
+	if (App->input->GetKey(SDL_SCANCODE_K) == KEY_DOWN)
+	{
+		easterEgg1 = !easterEgg1;
+	}
 
 	// Prepare for raycast ------------------------------------------------------
 	
